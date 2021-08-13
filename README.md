@@ -65,10 +65,28 @@ while(:); do echo "I'm still here"; read; done |mosquitto_pub -t TEST -h localho
 
 `read.sh` reports an error and continues when run from a script in the foreground when `read` is used to hang. From a suggestion at <https://stackoverflow.com/questions/2935183/bash-infinite-sleep-infinite-blocking> replacing it with `while true; do sleep 86400; done` works w/out excessive CPU usage.
 
+## testing across LAN
+
+Broker on `olive` and publisher on `rowan`. Subscribing on `rocinante`.
+
+|test|publisher|result|
+|---|---|---|
+|orderly shutdown `rowan`|hang|immediate will sent|
+|disconnect cable|hang|eventual will sent|
+|kill mosquitto_pub after cable reconnect|hang|second will sent|
+|disconnect cable|repeat|eventual will sent, after cable reconnect saw that publisher had executed on an error|
+|stop & start broker and wait|hang|no result|
+|kill publisher following previous test|hang|will sent|
+|stop & start broker and wait|repeat|messages continue|
+|kill publisher following previous test|repeat|will sent|
+|stop/start systemd service|hang/systemd|will sent on stop, msg sent on start |
+|reboot|hang/systemd|wills ent on shutdown, msg sent on boot|
+|pull cable|hang/systemd|will sent|
+|reconnect cable|hang/systemd|nothing|
+|stop service|hang/systemd|will sent|
+|pull cable|repeat/systemd|will sent|
+|reconnect cable|repeat/systemd|status reports errors but dows not restart|
+|add `set -e` to script and repeat cable pull|repeat/systemd|hello message sent on reconnect|
+| | | |
+
 ## TODO
-
-Test client (publisher) on a host other than `localhost` and 
-
-* test with cable disconnect (and subsequent reconnect)
-* Test when host performs an orderly shutdown
-* test with a client process run from Systemd.

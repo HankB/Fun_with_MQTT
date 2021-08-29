@@ -88,5 +88,3 @@ Broker on `olive` and publisher on `rowan`. Subscribing on `rocinante`.
 |reconnect cable|repeat/systemd|status reports errors but dows not restart|
 |add `set -e` to script and repeat cable pull|repeat/systemd|hello message sent on reconnect|
 | | | |
-
-## TODO

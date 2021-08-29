@@ -2,5 +2,16 @@
 
 set -e # exit on error
 
-while(:); do echo "I'm still here"; sleep 5; done \
-|mosquitto_pub -t TEST -h localhost  --will-payload "I'm now gone" --will-topic "test/will" -l
+# connect and send periodic message to broker
+
+host=$(hostname)
+
+while(:)
+do
+    echo "$host still here"
+    sleep 5
+done | \
+mosquitto_pub  -t TEST \
+               -h localhost \
+               --will-payload "$host now gone" \
+               --will-topic "TEST/will" -l
